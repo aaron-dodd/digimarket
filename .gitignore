@@ -20,3 +20,6 @@ bin/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+src/network/organizations/
+src/network/config/system-genesis-block/genesis.block

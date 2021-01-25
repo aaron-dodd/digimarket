@@ -1,0 +1,11 @@
+PeerOrgs:
+  - Name: org0
+    Domain: org0.digimarket.com
+    EnableNodeOUs: true
+    Template:
+      Count: 3
+      SANS:
+        - localhost
+        - 127.0.0.1
+    Users:
+      Count: 3

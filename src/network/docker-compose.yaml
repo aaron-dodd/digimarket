@@ -1,0 +1,191 @@
+version: '3'
+
+# root: 7050-7060
+# org0: 7060-7070
+# org1: 7070-7080
+
+volumes:
+  orderer.digimarket.com:
+  peer0.org0.digimarket.com:
+  peer1.org0.digimarket.com:
+  peer2.org0.digimarket.com:
+  peer0.org1.digimarket.com:
+  peer1.org1.digimarket.com:
+  peer2.org1.digimarket.com:
+
+networks:
+  digimarket_test:
+
+services:
+  orderer.digimarket.com:
+    container_name: orderer.digimarket.com
+    extends:
+      file: docker/orderer-base.yaml
+      service: orderer-base
+    environment:
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+    volumes:
+      - ./organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/:/var/hyperledger/orderer/msp
+      - ./organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/tls/:/var/hyperledger/orderer/tls
+      - orderer.digimarket.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+
+  peer0.org0.digimarket.com:
+    container_name: peer0.org0.digimarket.com
+    extends:
+      file: docker/peer-base.yaml
+      service: peer-base
+    environment:
+      # Peer specific variabes
+      - CORE_PEER_ID=peer0.org0.digimarket.com
+      - CORE_PEER_ADDRESS=peer0.org0.digimarket.com:7061
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7061
+      - CORE_PEER_CHAINCODEADDRESS=peer0.org0.digimarket.com:7062
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7062
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org0.digimarket.com:7061
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org0.digimarket.com:7061
+      - CORE_PEER_LOCALMSPID=Org0MSP
+    volumes:
+      - ./organizations/peerOrganizations/org0.digimarket.com/peers/peer0.org0.digimarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/org0.digimarket.com/peers/peer0.org0.digimarket.com/tls:/etc/hyperledger/fabric/tls
+      - peer0.org0.digimarket.com:/var/hyperledger/production
+    ports:
+      - 7061:7061
+
+  peer1.org0.digimarket.com:
+    container_name: peer1.org0.digimarket.com
+    extends:
+      file: docker/peer-base.yaml
+      service: peer-base
+    environment:
+      # Peer specific variabes
+      - CORE_PEER_ID=peer1.org0.digimarket.com
+      - CORE_PEER_ADDRESS=peer1.org0.digimarket.com:7062
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7062
+      - CORE_PEER_CHAINCODEADDRESS=peer1.org0.digimarket.com:7063
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7063
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org0.digimarket.com:7062
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org0.digimarket.com:7062
+      - CORE_PEER_LOCALMSPID=Org0MSP
+    volumes:
+      - ./organizations/peerOrganizations/org0.digimarket.com/peers/peer0.org0.digimarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/org0.digimarket.com/peers/peer0.org0.digimarket.com/tls:/etc/hyperledger/fabric/tls
+      - peer1.org0.digimarket.com:/var/hyperledger/production
+    ports:
+      - 7062:7062
+
+  peer2.org0.digimarket.com:
+    container_name: peer2.org0.digimarket.com
+    extends:
+      file: docker/peer-base.yaml
+      service: peer-base
+    environment:
+      # Peer specific variabes
+      - CORE_PEER_ID=peer2.org0.digimarket.com
+      - CORE_PEER_ADDRESS=peer2.org0.digimarket.com:7063
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7063
+      - CORE_PEER_CHAINCODEADDRESS=peer2.org0.digimarket.com:7064
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7064
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.org0.digimarket.com:7063
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.org0.digimarket.com:7063
+      - CORE_PEER_LOCALMSPID=Org0MSP
+    volumes:
+      - ./organizations/peerOrganizations/org0.digimarket.com/peers/peer0.org0.digimarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/org0.digimarket.com/peers/peer0.org0.digimarket.com/tls:/etc/hyperledger/fabric/tls
+      - peer2.org0.digimarket.com:/var/hyperledger/production
+    ports:
+      - 7063:7063
+
+  peer0.org1.digimarket.com:
+    container_name: peer0.org1.digimarket.com
+    extends:
+      file: docker/peer-base.yaml
+      service: peer-base
+    environment:
+      # Peer specific variabes
+      - CORE_PEER_ID=peer0.org1.digimarket.com
+      - CORE_PEER_ADDRESS=peer0.org1.digimarket.com:7071
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7071
+      - CORE_PEER_CHAINCODEADDRESS=peer0.org1.digimarket.com:7072
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7072
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.digimarket.com:7071
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.digimarket.com:7071
+      - CORE_PEER_LOCALMSPID=Org1MSP
+    volumes:
+      - ./organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls:/etc/hyperledger/fabric/tls
+      - peer0.org1.digimarket.com:/var/hyperledger/production
+    ports:
+      - 7071:7071
+
+  peer1.org1.digimarket.com:
+    container_name: peer1.org1.digimarket.com
+    extends:
+      file: docker/peer-base.yaml
+      service: peer-base
+    environment:
+      # Peer specific variabes
+      - CORE_PEER_ID=peer1.org1.digimarket.com
+      - CORE_PEER_ADDRESS=peer1.org1.digimarket.com:7072
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7072
+      - CORE_PEER_CHAINCODEADDRESS=peer1.org1.digimarket.com:7073
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7073
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.digimarket.com:7072
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.digimarket.com:7072
+      - CORE_PEER_LOCALMSPID=Org1MSP
+    volumes:
+      - ./organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls:/etc/hyperledger/fabric/tls
+      - peer1.org1.digimarket.com:/var/hyperledger/production
+    ports:
+      - 7072:7072
+
+  peer2.org1.digimarket.com:
+    container_name: peer2.org1.digimarket.com
+    extends:
+      file: docker/peer-base.yaml
+      service: peer-base
+    environment:
+      # Peer specific variabes
+      - CORE_PEER_ID=peer2.org1.digimarket.com
+      - CORE_PEER_ADDRESS=peer2.org1.digimarket.com:7073
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7073
+      - CORE_PEER_CHAINCODEADDRESS=peer2.org1.digimarket.com:7074
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7074
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.org1.digimarket.com:7073
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.org1.digimarket.com:7073
+      - CORE_PEER_LOCALMSPID=Org1MSP
+    volumes:
+      - ./organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/msp:/etc/hyperledger/fabric/msp
+      - ./organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls:/etc/hyperledger/fabric/tls
+      - peer2.org1.digimarket.com:/var/hyperledger/production
+    ports:
+      - 7073:7073
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:latest
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./organizations:/opt/gopath/src/github.com/hyperledger/fabric/peer/organizations
+        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+    depends_on:
+      - peer0.org0.digimarket.com
+      - peer1.org0.digimarket.com
+      - peer2.org0.digimarket.com
+      - peer0.org1.digimarket.com
+      - peer1.org1.digimarket.com
+      - peer2.org1.digimarket.com
+    networks:
+      - digimarket_test
