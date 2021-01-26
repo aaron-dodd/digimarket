@@ -51,6 +51,21 @@ export CORE_PEER_ADDRESS=localhost:7063
 export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganizations/org0.digimarket.com/peers/peer2.org0.digimarket.com/tls/ca.crt
 ./bin/peer channel join -b ./src/network/channel-artifacts/default-channel.block
 
+## Set Anchor peer0
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls/ca.crt
+export CORE_PEER_ADDRESS=localhost:7061
+
+./bin/peer channel fetch config ./src/network/channel-artifacts/org0_config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.digimarket.com -c default-channel --tls --cafile ${PWD}/src/network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem
+./bin/configtxlator proto_decode --input ./src/network/channel-artifacts/org0_config_block.pb --type common.Block --output ./src/network/channel-artifacts/org0_config_block.json
+jq .data.data[0].payload.data.config ./src/network/channel-artifacts/org0_config_block.json > ./src/network/channel-artifacts/org0_config.json
+jq '.channel_group.groups.Application.groups.Org0.values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": [{"host": "peer0.org0.digimarket.com","port": 7061}]},"version": "0"}}' ./src/network/channel-artifacts/org0_config.json > ./src/network/channel-artifacts/org0_config_modify.json
+./bin/configtxlator proto_encode --input ./src/network/channel-artifacts/org0_config.json --type common.Config --output ./src/network/channel-artifacts/org0_config.pb
+./bin/configtxlator proto_encode --input ./src/network/channel-artifacts/org0_config_modify.json --type common.Config --output ./src/network/channel-artifacts/org0_config_modify.pb
+./bin/configtxlator compute_update --channel_id default-channel --original ./src/network/channel-artifacts/org0_config.pb --updated ./src/network/channel-artifacts/org0_config_modify.pb --output ./src/network/channel-artifacts/org0_config_update.pb
+./bin/configtxlator proto_decode --input ./src/network/channel-artifacts/org0_config_update.pb --type common.ConfigUpdate --output ./src/network/channel-artifacts/org0_config_update.json
+echo '{"payload":{"header":{"channel_header":{"channel_id":"default-channel", "type":2}},"data":{"config_update":'$(cat ./src/network/channel-artifacts/org0_config_update.json)'}}}' | jq . > ./src/network/channel-artifacts/org0_config_update_envelope.json
+./bin/configtxlator proto_encode --input ./src/network/channel-artifacts/org0_config_update_envelope.json --type common.Envelope --output ./src/network/channel-artifacts/org0_config_update_envelope.pb
+./bin/peer channel update -f ./src/network/channel-artifacts/org0_config_update_envelope.pb -c default-channel -o localhost:7050  --ordererTLSHostnameOverride orderer.digimarket.com --tls --cafile ${PWD}/src/network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem
 
 ## Organization 1
 
@@ -71,3 +86,19 @@ export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganiza
 export CORE_PEER_ADDRESS=localhost:7073
 export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganizations/org1.digimarket.com/peers/peer2.org1.digimarket.com/tls/ca.crt
 ./bin/peer channel join -b ./src/network/channel-artifacts/default-channel.block
+
+## Set Anchor peer0
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls/ca.crt
+export CORE_PEER_ADDRESS=localhost:7071
+
+./bin/peer channel fetch config ./src/network/channel-artifacts/org1_config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.digimarket.com -c default-channel --tls --cafile ${PWD}/src/network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem
+./bin/configtxlator proto_decode --input ./src/network/channel-artifacts/org1_config_block.pb --type common.Block --output ./src/network/channel-artifacts/org1_config_block.json
+jq .data.data[0].payload.data.config ./src/network/channel-artifacts/org1_config_block.json > ./src/network/channel-artifacts/org1_config.json
+jq '.channel_group.groups.Application.groups.Org1.values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": [{"host": "peer0.org1.digimarket.com","port": 7071}]},"version": "0"}}' ./src/network/channel-artifacts/org1_config.json > ./src/network/channel-artifacts/org1_config_modify.json
+./bin/configtxlator proto_encode --input ./src/network/channel-artifacts/org1_config.json --type common.Config --output ./src/network/channel-artifacts/org1_config.pb
+./bin/configtxlator proto_encode --input ./src/network/channel-artifacts/org1_config_modify.json --type common.Config --output ./src/network/channel-artifacts/org1_config_modify.pb
+./bin/configtxlator compute_update --channel_id default-channel --original ./src/network/channel-artifacts/org1_config.pb --updated ./src/network/channel-artifacts/org1_config_modify.pb --output ./src/network/channel-artifacts/org1_config_update.pb
+./bin/configtxlator proto_decode --input ./src/network/channel-artifacts/org1_config_update.pb --type common.ConfigUpdate --output ./src/network/channel-artifacts/org1_config_update.json
+echo '{"payload":{"header":{"channel_header":{"channel_id":"default-channel", "type":2}},"data":{"config_update":'$(cat ./src/network/channel-artifacts/org1_config_update.json)'}}}' | jq . > ./src/network/channel-artifacts/org1_config_update_envelope.json
+./bin/configtxlator proto_encode --input ./src/network/channel-artifacts/org1_config_update_envelope.json --type common.Envelope --output ./src/network/channel-artifacts/org1_config_update_envelope.pb
+./bin/peer channel update -f ./src/network/channel-artifacts/org1_config_update_envelope.pb -c default-channel -o localhost:7050  --ordererTLSHostnameOverride orderer.digimarket.com --tls --cafile ${PWD}/src/network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem
