@@ -35,7 +35,7 @@ export CORE_PEER_TLS_ENABLED=true
 export CORE_PEER_LOCALMSPID="Org0MSP"
 export CORE_PEER_MSPCONFIGPATH=${PWD}/src/network/organizations/peerOrganizations/org0.digimarket.com/users/Admin@org0.digimarket.com/msp
 
-./bin/peer channel create -o localhost:7050  --ordererTLSHostnameOverride orderer.digimarket.com -c default-channel -f ./src/network/channel-artifacts/default-channel.tx --outputBlock ./src/network/channel-artifacts/default-channel.block --tls --cafile ${PWD}/src/network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem
+./bin/peer channel create -o localhost:7050 --ordererTLSHostnameOverride orderer.digimarket.com -c default-channel -f ./src/network/channel-artifacts/default-channel.tx --outputBlock ./src/network/channel-artifacts/default-channel.block --tls --cafile ${PWD}/src/network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem
 
 ## Join peers to channel
 
@@ -52,7 +52,7 @@ export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganiza
 ./bin/peer channel join -b ./src/network/channel-artifacts/default-channel.block
 
 ## Set Anchor peer0
-export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls/ca.crt
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls/ca.crt
 export CORE_PEER_ADDRESS=localhost:7061
 
 ./bin/peer channel fetch config ./src/network/channel-artifacts/org0_config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.digimarket.com -c default-channel --tls --cafile ${PWD}/src/network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem
@@ -88,7 +88,7 @@ export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganiza
 ./bin/peer channel join -b ./src/network/channel-artifacts/default-channel.block
 
 ## Set Anchor peer0
-export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls/ca.crt
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls/ca.crt
 export CORE_PEER_ADDRESS=localhost:7071
 
 ./bin/peer channel fetch config ./src/network/channel-artifacts/org1_config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.digimarket.com -c default-channel --tls --cafile ${PWD}/src/network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem

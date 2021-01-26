@@ -1,3 +1,5 @@
+#!/bin/bash
+
 pushd ./src/network
 docker-compose down
 popd
