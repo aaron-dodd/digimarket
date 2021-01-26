@@ -52,7 +52,7 @@ export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganiza
 ./bin/peer channel join -b ./src/network/channel-artifacts/default-channel.block
 
 ## Set Anchor peer0
-export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/tls/ca.crt
+export CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/src/network/organizations/peerOrganizations/org0.digimarket.com/peers/peer0.org0.digimarket.com/tls/ca.crt
 export CORE_PEER_ADDRESS=localhost:7061
 
 ./bin/peer channel fetch config ./src/network/channel-artifacts/org0_config_block.pb -o localhost:7050 --ordererTLSHostnameOverride orderer.digimarket.com -c default-channel --tls --cafile ${PWD}/src/network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem
