@@ -119,7 +119,7 @@ Application: &ApplicationDefaults
     <<: *ApplicationCapabilities
 
 Orderer: &OrdererDefaults
-  OrdererType: solo
+  OrdererType: etcdraft
   Addresses:
     - orderer.digimarket.com:7050
   BatchTimeout: 2s
