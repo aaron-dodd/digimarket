@@ -9,6 +9,8 @@ var fabricNetwork = require('fabric-network');
 router.use(express.urlencoded());
 
 router.get('/', (req, res) => {
+    var fcs = new fabricCAClient('http://localhost:7054', );
+
     const result = {
         "links": [
             {
