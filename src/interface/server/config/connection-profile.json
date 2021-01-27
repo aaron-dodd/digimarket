@@ -1,0 +1,85 @@
+{
+    "name": "digimarket-network",
+    "version": "1.0.0",
+    "client": {
+        "organization": "Org0",
+        "connection": {
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                },
+                "orderer": "300"
+            }
+        }
+    },
+    "channels": {
+        "default-channel": {
+            "orderers": [
+                "orderer.digimarket.com"
+            ],
+            "peers": {
+                "peer0.org0.digimarket.com": {},
+                "peer1.org0.digimarket.com": {},
+                "peer2.org0.digimarket.com": {},
+                "peer0.org1.digimarket.com": {},
+                "peer1.org1.digimarket.com": {},
+                "peer2.org1.digimarket.com": {}
+            }
+        }
+    },
+    "organizations": {
+        "Org0": {
+            "mspid": "Org0",
+            "peers": [
+                "peer0.org0.digimarket.com",
+                "peer1.org0.digimarket.com",
+                "peer2.org0.digimarket.com"
+            ],
+            "certificateAuthorities": [
+                "ca.digimarket.com"
+            ]
+        },
+        "Org1": {
+            "mspid": "Org1",
+            "peers": [
+                "peer0.org1.digimarket.com",
+                "peer1.org1.digimarket.com",
+                "peer2.org1.digimarket.com"
+            ],
+            "certificateAuthorities": [
+                "ca.digimarket.com"
+            ]
+        }
+    },
+    "orderers": {
+        "orderer.digimarket.com": {
+            "url": "grpc://localhost:7050"
+        }
+    },
+    "peers": {
+        "peer0.org0.digimarket.com": {
+            "url": "grpc://localhost:7061"
+        },
+        "peer1.org0.digimarket.com": {
+            "url": "grpc://localhost:7062"
+        },
+        "peer2.org0.digimarket.com": {
+            "url": "grpc://localhost:7063"
+        },
+        "peer0.org1.digimarket.com": {
+            "url": "grpc://localhost:7071"
+        },
+        "peer1.org1.digimarket.com": {
+            "url": "grpc://localhost:7072"
+        },
+        "peer2.org1.digimarket.com": {
+            "url": "grpc://localhost:7073"
+        }
+    },
+    "certificateAuthorities": {
+        "ca.digimarket.com": {
+            "url": "http://localhost:7054",
+            "caName": "ca.digimarket.com"
+        }
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "adminUsername": "admin",
+    "adminSecret": "adminpw",
+    "orgMSPID": "Org0",
+    "defaultAffiliation": "org0.department1",
+    "gatewayDiscovery": { "enabled": true, "asLocalhost": true }
+  }
