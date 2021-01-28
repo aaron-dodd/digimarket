@@ -6,6 +6,8 @@ var fabricCAClient = require('fabric-ca-client');
 var fabricCommon = require('fabric-common');
 var fabricNetwork = require('fabric-network');
 
+var fcs = new fabricCAClient('http://localhost:7054');
+
 const configPath = path.join(__dirname, "../../config/config.json");
 const configJSON = fs.readFileSync(configPath, 'utf8');
 const config = JSON.parse(configJSON);
@@ -18,8 +20,6 @@ let router = express.Router();
 router.use(express.urlencoded());
 
 router.get('/', async (req, res) => {
-    var fcs = new fabricCAClient('http://localhost:7054');
-
     const walletPath = path.join(__dirname, '../../wallet');
     const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
 
@@ -82,12 +82,43 @@ router.get('/', async (req, res) => {
     res.json({ "foo": "bar" });
 });
 
-router.post('/login', (req, res) => {
-    console.log(req.body);
+router.post('/login', async (req, res) => {
+    var userName = req.body.username;
+    var userSecret = req.body.password;
+
+    const walletPath = path.join(__dirname, '../../wallet');
+    const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
+
+    var userIdentity = await wallet.get(userName);
+
+    console.log("foobar");
+
+    if (userIdentity) {
+        const gateway = new fabricNetwork.Gateway();
+        await gateway.connect(ccp, { wallet, identity: userIdentity, discovery: config.gatewayDiscovery });
+
+        const network = await gateway.getNetwork('default-channel');
+
+        console.log('other');
+        const contract = network.getContract('licenseContract');
+
+        const payload = {
+            contract: contract,
+            network: network,
+            username: userName,
+        };
+
+        console.log(payload);
+
+        res.json();
+    } else {
+        res.sendStatus(300);
+    }
 });
 
 router.post('/create', async (req, res) => {
-    var fcs = new fabricCAClient('http://localhost:7054');
+    var userName = req.body.username;
+    var userSecret = req.body.password;
 
     const walletPath = path.join(__dirname, '../../wallet');
     const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
@@ -119,9 +150,7 @@ router.post('/create', async (req, res) => {
     }
 
     // Check for user identity
-    const username = "foobar";
-    const userSecret = "foobar";
-    const userExists = await wallet.get(username);
+    const userExists = await wallet.get(userName);
     if (userExists) {
         console.log9("User exists. Aborting");
         res.json({ "result": "user exists" });
@@ -129,6 +158,30 @@ router.post('/create', async (req, res) => {
     } else {
         console.log("User does not exist. Creating");
     }
+
+    const adminIdentity = await wallet.get(config.adminUsername);
+    const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
+    const adminUser = await provider.getUserContext(adminIdentity, config.adminUsername);
+
+    await fcs.register({
+        affiliation: config.defaultAffiliation,
+        enrollmentID: userName,
+        enrollmentSecret: userSecret,
+        role: 'client'
+    }, adminUser);
+
+    const userEnrollment = await fcs.enroll({ enrollmentID: userName, enrollmentSecret: userSecret });
+
+    const userIdentity = {
+        credentials: {
+            certificate: userEnrollment.certificate,
+            privateKey: userEnrollment.key.toBytes(),
+        },
+        mspId: config.orgMSPID,
+        type: "X.509",
+    };
+
+    wallet.put(userName, userIdentity);
 
     res.json({ "foo": "bar" });
 });
