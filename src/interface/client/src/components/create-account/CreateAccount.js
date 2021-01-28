@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 export default function CreateAccount() {
     const classes = useStyles();
     const [values, setValues] = React.useState({
-        email: '',
+        username: '',
         password: '',
         confirmPassword: '',
         showPassword: false,
@@ -68,7 +68,7 @@ export default function CreateAccount() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email: values.email,
+                username: values.username,
                 password: values.password,
             }),
         });
@@ -84,12 +84,12 @@ export default function CreateAccount() {
                     <TextField
                         normal fullWidth
                         className={classes.margin}
-                        label="Email"
-                        type="email"
-                        value={values.email}
-                        onChange={handleChange('email')}
+                        label="Username"
+                        type="text"
+                        value={values.username}
+                        onChange={handleChange('username')}
                         variant="outlined"
-                        placeholder="mail@example.com"
+                        placeholder="sample_username"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">

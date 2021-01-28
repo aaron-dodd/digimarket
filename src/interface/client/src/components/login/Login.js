@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Login() {
     const classes = useStyles();
     const [values, setValues] = React.useState({
-        email: '',
+        username: '',
         password: '',
         showPassword: false,
     });
@@ -58,14 +58,14 @@ export default function Login() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email: values.email,
+                username: values.username,
                 password: values.password,
             }),
         });
     };
 
-    const { email, password } = values;
-    const enableNext = email.length > 0 && password.length > 0;
+    const { username, password } = values;
+    const enableNext = username.length > 0 && password.length > 0;
 
     return (
         <div className={classes.root}>
@@ -77,12 +77,12 @@ export default function Login() {
                     <TextField
                         normal fullWidth
                         className={classes.margin}
-                        label="Email"
-                        type="email"
-                        onChange={handleChange('email')}
-                        value={values.email}
+                        label="Username"
+                        type="text"
+                        onChange={handleChange('username')}
+                        value={values.username}
                         variant="outlined"
-                        placeholder="mail@example.com"
+                        placeholder="sample_username"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">
