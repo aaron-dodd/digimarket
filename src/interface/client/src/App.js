@@ -26,6 +26,9 @@ import CreateAccount from './components/create-account/CreateAccount';
 import Home from './components/home/Home';
 import Login from './components/login/Login';
 import VerifyFile from './components/verify-file/VerifyFile';
+import AvailableProducts from './components/available-products/AvailableProducts';
+import TransactionHistory from './components/transaction-history/TransactionHistory';
+import BlockchainStatus from './components/blockchain-status/BlockchainStatus';
 
 const drawerWidth = 300;
 
@@ -155,8 +158,11 @@ export default function App(props) {
                 <div className={classes.toolbar} />
                 <Switch>
                   <Route exact path="/" component={Home} />
-                  <Route exact path="/login" component={Login} />
+                  <Route exact path="/available-products" component={AvailableProducts} />
+                  <Route exact path="/blockchain-status" component={BlockchainStatus} />
                   <Route exact path="/create-account" component={CreateAccount} />
+                  <Route exact path="/login" component={Login} />
+                  <Route exact path="/transaction-history" component={TransactionHistory} />
                   <Route exact path="/verify-file" component={VerifyFile} />
                 </Switch>
             </main>
