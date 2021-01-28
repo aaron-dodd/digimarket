@@ -1,79 +1,104 @@
 {
     "name": "digimarket-network",
-    "version": "1.0.0",
-    "client": {
-        "organization": "Org0",
-        "connection": {
-            "timeout": {
-                "peer": {
-                    "endorser": "300"
-                },
-                "orderer": "300"
-            }
-        }
-    },
+    "version": "1.1",
     "channels": {
         "default-channel": {
             "orderers": [
                 "orderer.digimarket.com"
             ],
-            "peers": {
-                "peer0.org0.digimarket.com": {},
-                "peer1.org0.digimarket.com": {},
-                "peer2.org0.digimarket.com": {},
-                "peer0.org1.digimarket.com": {},
-                "peer1.org1.digimarket.com": {},
-                "peer2.org1.digimarket.com": {}
-            }
+            "peers": [
+                "peer0.org0.digimarket.com",
+                "peer1.org0.digimarket.com",
+                "peer2.org0.digimarket.com",
+                "peer0.org1.digimarket.com",
+                "peer1.org1.digimarket.com",
+                "peer2.org1.digimarket.com"
+            ]
         }
     },
     "organizations": {
         "Org0": {
-            "mspid": "Org0",
+            "mspid": "Org0MSP",
             "peers": [
                 "peer0.org0.digimarket.com",
                 "peer1.org0.digimarket.com",
                 "peer2.org0.digimarket.com"
-            ],
-            "certificateAuthorities": [
-                "ca.digimarket.com"
             ]
         },
         "Org1": {
-            "mspid": "Org1",
+            "mspid": "Org1MSP",
             "peers": [
                 "peer0.org1.digimarket.com",
                 "peer1.org1.digimarket.com",
                 "peer2.org1.digimarket.com"
-            ],
-            "certificateAuthorities": [
-                "ca.digimarket.com"
             ]
         }
     },
     "orderers": {
         "orderer.digimarket.com": {
-            "url": "grpc://localhost:7050"
+            "url": "grpcs://localhost:7050",
+            "grpcOptions": {
+                "ssl-target-name-override": "orderer.digimarket.com"
+            },
+            "tlsCACerts": {
+                "path": "../../network/organizations/ordererOrganizations/digimarket.com/orderers/orderer.digimarket.com/msp/tlscacerts/tlsca.digimarket.com-cert.pem"
+            }
         }
     },
     "peers": {
         "peer0.org0.digimarket.com": {
-            "url": "grpc://localhost:7061"
+            "url": "grpcs://localhost:7061",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.org0.digimarket.com"
+            },
+            "tlsCACerts": {
+                "path": "../../network/organizations/peerOrganizations/org0.digimarket.com/peers/peer0.org0.digimarket.com/msp/tlscacerts/tlsca.org0.digimarket.com-cert.pem"
+            }
         },
         "peer1.org0.digimarket.com": {
-            "url": "grpc://localhost:7062"
+            "url": "grpcs://localhost:7062",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer1.org0.digimarket.com"
+            },
+            "tlsCACerts": {
+                "path": "../../network/organizations/peerOrganizations/org0.digimarket.com/peers/peer1.org0.digimarket.com/msp/tlscacerts/tlsca.org0.digimarket.com-cert.pem"
+            }
         },
         "peer2.org0.digimarket.com": {
-            "url": "grpc://localhost:7063"
+            "url": "grpcs://localhost:7063",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer2.org0.digimarket.com"
+            },
+            "tlsCACerts": {
+                "path": "../../network/organizations/peerOrganizations/org0.digimarket.com/peers/peer2.org0.digimarket.com/msp/tlscacerts/tlsca.org0.digimarket.com-cert.pem"
+            }
         },
         "peer0.org1.digimarket.com": {
-            "url": "grpc://localhost:7071"
+            "url": "grpcs://localhost:7071",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.org1.digimarket.com"
+            },
+            "tlsCACerts": {
+                "path": "../../network/organizations/peerOrganizations/org1.digimarket.com/peers/peer0.org1.digimarket.com/msp/tlscacerts/tlsca.org1.digimarket.com-cert.pem"
+            }
         },
         "peer1.org1.digimarket.com": {
-            "url": "grpc://localhost:7072"
+            "url": "grpcs://localhost:7072",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer1.org1.digimarket.com"
+            },
+            "tlsCACerts": {
+                "path": "../../network/organizations/peerOrganizations/org1.digimarket.com/peers/peer1.org1.digimarket.com/msp/tlscacerts/tlsca.org1.digimarket.com-cert.pem"
+            }
         },
         "peer2.org1.digimarket.com": {
-            "url": "grpc://localhost:7073"
+            "url": "grpcs://localhost:7073",
+            "grpcOptions": {
+                "ssl-target-name-override": "peer2.org1.digimarket.com"
+            },
+            "tlsCACerts": {
+                "path": "../../network/organizations/peerOrganizations/org1.digimarket.com/peers/peer2.org1.digimarket.com/msp/tlscacerts/tlsca.org1.digimarket.com-cert.pem"
+            }
         }
     },
     "certificateAuthorities": {
