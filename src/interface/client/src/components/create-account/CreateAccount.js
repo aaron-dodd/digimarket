@@ -64,6 +64,7 @@ export default function CreateAccount() {
         const response = await fetch('/api/user/create', {
             method: 'POST',
             headers: {
+                'Access-Control-Allow-Origin': '*',
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
