@@ -54,6 +54,7 @@ export default function Login() {
         const response = await fetch('/api/user/login', {
             method: 'POST',
             headers: {
+                'Access-Control-Allow-Origin': '*',
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
@@ -69,7 +70,7 @@ export default function Login() {
 
     return (
         <div className={classes.root}>
-            <form autoComplete="off">
+            <form autoComplete="off" onSubmit={onSubmit}>
                 <Paper className={classes.paper}>
                     <Typography variant="h4" gutterBottom>
                         Login
@@ -123,7 +124,7 @@ export default function Login() {
                         <Link to="/create-account" component={RouteLink}>
                             <Button color="primary">Create account</Button>
                         </Link>
-                        <Button variant="contained" color="primary" disabled={!enableNext}>Next</Button>
+                        <Button type="submit" variant="contained" color="primary" disabled={!enableNext}>Next</Button>
                     </Grid>
                 </Paper>
             </form>
