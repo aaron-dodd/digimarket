@@ -1,6 +1,7 @@
 .vs/
 vendor/
 pkg/
+vars/
 node_modules/
 .pnp/
 .pnp.js
