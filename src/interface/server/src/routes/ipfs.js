@@ -1,14 +1,14 @@
-const express = require('express');
-const ipfsCreateClient = require('ipfs-http-client');
+const express = require("express");
+const ipfsCreateClient = require("ipfs-http-client");
 
 let router = express.Router();
-const ipfsClient = ipfsCreateClient('http://localhost:5001')
+const ipfsClient = ipfsCreateClient("http://localhost:5001")
 
-router.put('/upload', (req, res) => {
+router.put("/upload", (req, res) => {
     ipfsClient.Add
 });
 
-router.get('/file/:cid', async (req, res) => {
+router.get("/file/:cid", async (req, res) => {
     console.log(req.params.cid);
     var content = [];
 
