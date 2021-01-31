@@ -33,14 +33,4 @@ app.get('/', (req, res) => {
     res.json(result);
 });
 
-app.get('/api/customers', (req, res) => {
-    const customers = [
-        {id: 1, firstName: 'John', secondName: 'Doe', },
-        {id: 2, firstName: 'Aaron', secondName: 'Dodd', },
-        {id: 3, firstName: 'Andreea-Gabriela', secondName: 'Varga', },
-    ];
-
-    res.json(customers);
-});
-
 app.listen(port, () => console.log(`Server started on port ${port}`));
