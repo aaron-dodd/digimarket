@@ -6,7 +6,7 @@ var fabricCAClient = require('fabric-ca-client');
 var fabricCommon = require('fabric-common');
 var fabricNetwork = require('fabric-network');
 
-var fcs = new fabricCAClient('http://localhost:7054');
+var fcs = new fabricCAClient("https://localhost:7000");
 
 const configPath = path.join(__dirname, "../../config/config.json");
 const configJSON = fs.readFileSync(configPath, 'utf8');
@@ -14,6 +14,7 @@ const config = JSON.parse(configJSON);
 
 const ccpPath = path.join(__dirname, '../../config/connection-profile.json');
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
+const ccpPath = path.join(__dirname, "..", "..", "..", "..", "network", "vars", "profiles", "default-channel_connection_for_nodesdk.json");
 const ccp = JSON.parse(ccpJSON);
 
 let router = express.Router();
