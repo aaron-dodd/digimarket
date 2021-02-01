@@ -10,8 +10,6 @@ var fabricNetwork = require("fabric-network");
 
 var verifyToken = require("../middleware/auth/verify-token");
 
-var fcs = new fabricCAClient("https://localhost:7001");
-
 const configPath = path.join(__dirname, "..", "..", "config", "config.json");
 const configJSON = fs.readFileSync(configPath, "utf8");
 const config = JSON.parse(configJSON);
@@ -23,8 +21,6 @@ const ccp = JSON.parse(ccpJSON);
 router.get("/query/all",
     verifyToken,
     async (req, res) => {
-        console.log(req.username);
-
         const walletPath = path.join(__dirname, "..", "..", "wallet");
         console.log(walletPath);
         const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
@@ -41,8 +37,10 @@ router.get("/query/all",
             let transactionResponse = await transaction.evaluate("a");
             console.log(transactionResponse);
             res.send(transactionResponse);
+            return;
         }
 
+        res.sendStatus(403);
     }
 );
 

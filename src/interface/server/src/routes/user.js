@@ -11,8 +11,6 @@ var fabricNetwork = require("fabric-network");
 require("../middleware/auth/authentication");
 const User = require("../model/user");
 
-var fcs = new fabricCAClient("https://localhost:7001");
-
 const configPath = path.join(__dirname, "..", "..", "config", "config.json");
 const configJSON = fs.readFileSync(configPath, "utf8");
 const config = JSON.parse(configJSON);
@@ -66,6 +64,10 @@ router.post("/signup",
         var userName = req.body.username;
         var userSecret = req.body.password;
 
+        const caURL = ccp.certificateAuthorities["ca1.org1.digimarket.com"].url;
+        console.log(caURL);
+        var fcs = new fabricCAClient(caURL);
+
         const walletPath = path.join(__dirname, "..", "..", "wallet");
         const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
 
@@ -77,12 +79,12 @@ router.post("/signup",
             } else {
                 console.log(`An identity does not exist in the wallet for the admin user ${config.adminUsername}. creating`);
 
-                const adminEnrollment = await fcs.enroll({
+                let adminEnrollment = await fcs.enroll({
                     enrollmentID: config.adminUsername,
                     enrollmentSecret: config.adminSecret,
                 });
 
-                const identity = {
+                let identity = {
                     credentials: {
                         certificate: adminEnrollment.certificate,
                         privateKey: adminEnrollment.key.toBytes(),
