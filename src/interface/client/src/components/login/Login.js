@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link as RouteLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -13,6 +13,8 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+
+import { AuthContext } from '../../contexts/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-export default function Login() {
+export default function Login(props) {
+    const {login} = useContext(AuthContext);
     const classes = useStyles();
     const [values, setValues] = React.useState({
         username: '',
@@ -52,16 +55,23 @@ export default function Login() {
     const onSubmit = async (event) => {
         event.preventDefault();
         const response = await fetch('/api/user/login', {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                "Access-Control-Allow-Origin": "*",
+                "Accept": "application/json",
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 username: values.username,
                 password: values.password,
             }),
+        }).then(async (response) => {
+            return response.json();
+        }).then(async (result) => {
+            console.log(result);
+            if (result.authenticated) {
+                login("Bearer " + result.token);
+            }
         });
     };
 
@@ -101,6 +111,7 @@ export default function Login() {
                         onChange={handleChange('password')}
                         value={values.password}
                         variant="outlined"
+                        placeholder="password"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">

@@ -1,7 +1,7 @@
 {
     "adminUsername": "admin",
     "adminSecret": "adminpw",
-    "orgMSPID": "Org0MSP",
+    "orgMSPID": "org1-digimarket-com",
     "defaultAffiliation": "org1.department1",
     "gatewayDiscovery": { "enabled": true, "asLocalhost": true }
   }

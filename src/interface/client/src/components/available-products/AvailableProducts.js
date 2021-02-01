@@ -25,6 +25,18 @@ const useStyles = makeStyles((theme) => ({
 export default function AvailableProducts() {
     const classes = useStyles();
 
+    const products = async () => {
+        await fetch("/api/products/", {
+            method: "GET",
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "x-access-token": localStorage.getItem("token")
+            },
+        });
+    };
+
     return (
         <Grid container className={classes.root} xs={12} spacing={2}>
             <Grid item xs={12}>

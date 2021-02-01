@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CreateAccount() {
     const classes = useStyles();
+    const [enableNext, setEnableNext] = React.useState(false);
     const [values, setValues] = React.useState({
         username: '',
         password: '',
@@ -59,9 +60,18 @@ export default function CreateAccount() {
         event.preventDefault();
     };
 
+    React.useEffect(() => {
+        setEnableNext(
+            (values.username.length > 0) &&
+            (values.password === values.confirmPassword) &&
+            (values.password.length > 0) &&
+            (values.confirmPassword.length > 0)
+        );
+    });
+
     const onSubmit = async (event) => {
         event.preventDefault();
-        const response = await fetch('/api/user/create', {
+        const response = await fetch('/api/user/signup', {
             method: 'POST',
             headers: {
                 'Access-Control-Allow-Origin': '*',
@@ -108,6 +118,7 @@ export default function CreateAccount() {
                         value={values.password}
                         onChange={handleChange('password')}
                         variant="outlined"
+                        placeholder="password"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">
@@ -136,6 +147,7 @@ export default function CreateAccount() {
                         value={values.confirmPassword}
                         onChange={handleChange('confirmPassword')}
                         variant="outlined"
+                        placeholder="password"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">
@@ -159,7 +171,7 @@ export default function CreateAccount() {
                         <Link to="/login" component={RouteLink}>
                             <Button color="primary">Back</Button>
                         </Link>
-                        <Button type="submit" variant="contained" color="primary">Next</Button>
+                        <Button type="submit" variant="contained" color="primary" disabled={!enableNext}>Next</Button>
                     </Grid>
                 </Paper>
             </form>

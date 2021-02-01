@@ -1,10 +1,15 @@
 const cors = require("cors");
 const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require('mongoose');
+
 const api = require("./routes/api");
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json({
+    extended: true
+}));
 
 const port = process.env.port || 4000;
 
@@ -33,4 +38,12 @@ app.get("/", (req, res) => {
     res.json(result);
 });
 
-app.listen(port, () => console.log(`Server started on port ${port}`));
+mongoose.connect(
+    "mongodb://127.0.0.1:27017/digimarket",
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }
+).then(() => {
+    app.listen(port, () => console.log(`Server started on port ${port}`));
+});
