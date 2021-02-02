@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Grid from '@material-ui/core/Grid';
@@ -24,9 +24,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AvailableProducts() {
     const classes = useStyles();
+    const [products, setProducts] = useState([]);
 
-    const products = async () => {
-        await fetch("/api/products/", {
+    const fetchProducts = async () => {
+        await fetch("/api/product/query/all", {
             method: "GET",
             headers: {
                 "Access-Control-Allow-Origin": "*",
@@ -34,8 +35,17 @@ export default function AvailableProducts() {
                 "Content-Type": "application/json",
                 "x-access-token": localStorage.getItem("token")
             },
+        }).then(async (response) => {
+            return response.json();
+        }).then(async (data) => {
+            setProducts(data);
         });
-    };
+    }
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
 
     return (
         <Grid container className={classes.root} xs={12} spacing={2}>
@@ -46,18 +56,13 @@ export default function AvailableProducts() {
                     </Typography>
                 </Paper>
             </Grid>
-            <Grid item xs={12} sm={4} md={12} lg={4}>
-                <ProductListing />
-            </Grid>
-            <Grid item xs={12} sm={4} md={12} lg={4}>
-                <ProductListing />
-            </Grid>
-            <Grid item xs={12} sm={4} md={12} lg={4}>
-                <ProductListing />
-            </Grid>
-            <Grid item xs={12} sm={4} md={12} lg={4}>
-                <ProductListing productTitle={"foobar"} productDetails={"sample"} />
-            </Grid>
+            {
+                products.map((product) => (
+                    <Grid item xs={12} sm={4} md={12} lg={4}>
+                        <ProductListing productTitle={product.filename} productDetails={product.filehash} />
+                    </Grid>
+                ))
+            }
         </Grid>
     )
 }

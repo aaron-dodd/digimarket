@@ -1,8 +1,12 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
+import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+
+import FileList from '../file-list/FileList';
+import FileUpload from '../file-upload/FileUpload';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -25,9 +29,9 @@ export default function ManageFiles() {
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                    <Typography variant="h4" gutterBottom>
-                        Manage Files
-                    </Typography>
+                    <FileUpload />
+                    <br></br>
+                    <FileList />
             </Paper>
         </div>
     )
