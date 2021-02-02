@@ -6,7 +6,8 @@ import (
 
 type Product struct {
 	UUID string `json:"uuid"`
-	Owner Owner `json:"owner"`
+	AssetType string `json:"assetType"`
+	Owner string `json:"owner"`
 	TimeStamp time.Time`json:"timestamp"`
 	FileName string `json:"filename"`
 	FileHash string `json:"filehash"`

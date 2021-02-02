@@ -4,12 +4,29 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
-	"github.com/google/uuid"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
 type LicenseContract struct {
 	contractapi.Contract
+}
+
+func (lc *LicenseContract) Initialize(ctx contractapi.TransactionContextInterface) error {
+	fixedTime := time.Date(2021, time.January, 1, 23, 0, 0, 0, time.UTC)
+	expirationTime := time.Date(2022, time.January, 1, 23, 0, 0, 0, time.UTC)
+
+	lc.PutLicense(ctx, "L1", "username", fixedTime, "content_id", 1, expirationTime)
+	lc.PutLicense(ctx, "L2", "username", fixedTime, "content_id", 1, expirationTime)
+	lc.PutLicense(ctx, "L3", "username", fixedTime, "content_id", 1, expirationTime)
+	lc.PutLicense(ctx, "L4", "username", fixedTime, "content_id", 1, expirationTime)
+	lc.PutLicense(ctx, "L5", "username", fixedTime, "content_id", 1, expirationTime)
+	lc.PutLicense(ctx, "L6", "username", fixedTime, "content_id", 1, expirationTime)
+	lc.PutLicense(ctx, "L7", "username", fixedTime, "content_id", 1, expirationTime)
+	lc.PutLicense(ctx, "L8", "username", fixedTime, "content_id", 1, expirationTime)
+	lc.PutLicense(ctx, "L9", "username", fixedTime, "content_id", 1, expirationTime)
+	lc.PutLicense(ctx, "L10", "username", fixedTime, "content_id", 1, expirationTime)
+
+	return nil
 }
 
 func (lc *LicenseContract) GetLicense(ctx contractapi.TransactionContextInterface, id string) (*License, error) {
@@ -33,8 +50,35 @@ func (lc *LicenseContract) GetLicense(ctx contractapi.TransactionContextInterfac
 	return result, nil
 }
 
-func (lc *LicenseContract) PutLicense(ctx contractapi.TransactionContextInterface, owner Owner, contentID string, versionNumber int, usage time.Time, duration UsageDuration, expiration time.Time) (*License, error) {
-	id := uuid.NewString()
+func (lc *LicenseContract) GetAllLicenses(ctx contractapi.TransactionContextInterface) ([]*License, error) {
+	queryString := "{\"selector\": {\"assetType\": \"license\"}}"
+	resultsIterator, queryErr := ctx.GetStub().GetQueryResult(queryString)
+	if (queryErr != nil) {
+		return nil, queryErr
+	}
+	defer resultsIterator.Close()
+
+	var resultList []*License
+
+	for resultsIterator.HasNext() {
+		resultResponse, nextErr := resultsIterator.Next()
+		if nextErr != nil {
+			return nil, nextErr
+		}
+
+		result := new(License)
+		unmarshalError := json.Unmarshal(resultResponse.Value, result)
+		if (unmarshalError != nil) {
+			return nil, unmarshalError
+		}
+
+		resultList = append(resultList, result);
+	}
+
+	return resultList, nil
+}
+
+func (lc *LicenseContract) PutLicense(ctx contractapi.TransactionContextInterface, id string, owner string, creationTime time.Time, contentID string, versionNumber int, expiration time.Time) (*License, error) {
 	existing, getError := ctx.GetStub().GetState(id)
 
 	if getError != nil {
@@ -47,12 +91,11 @@ func (lc *LicenseContract) PutLicense(ctx contractapi.TransactionContextInterfac
 
 	result := new(License)
 	result.UUID = id
+	result.AssetType = "license"
 	result.Owner = owner
-	result.TimeStamp = time.Now()
+	result.TimeStamp = creationTime
 	result.ApplicableContentID = contentID
 	result.ApplicableVersion = versionNumber
-	result.UsageTime = usage
-	result.UsagePeriod = duration
 	result.Expiration = expiration
 
 	resultBytes, unmarshalError := json.Marshal(result)
