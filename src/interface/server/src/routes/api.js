@@ -1,6 +1,6 @@
 const express = require("express");
-const blockchain = require("./blockchain");
 const ipfs = require("./ipfs");
+const license = require("./license");
 const product = require("./product");
 const user = require("./user");
 
@@ -31,7 +31,7 @@ router.get("/", (req, res) => {
     res.json(result);
 });
 
-router.use("/blockchain", blockchain);
+router.use("/license", license);
 router.use("/ipfs", ipfs);
 router.use("/product", product);
 router.use("/user", user);

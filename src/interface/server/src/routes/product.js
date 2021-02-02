@@ -1,6 +1,5 @@
 const express = require("express");
-let router = express.Router();
-
+const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const path = require("path");
 
@@ -18,11 +17,12 @@ const ccpPath = path.join(__dirname, "..", "..", "..", "..", "network", "vars", 
 const ccpJSON = fs.readFileSync(ccpPath, "utf8");
 const ccp = JSON.parse(ccpJSON);
 
+let router = express.Router();
+
 router.get("/query/all",
     verifyToken,
     async (req, res) => {
         const walletPath = path.join(__dirname, "..", "..", "wallet");
-        console.log(walletPath);
         const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
 
         var userIdentity = await wallet.get(req.username);
@@ -31,11 +31,10 @@ router.get("/query/all",
             const gateway = new fabricNetwork.Gateway();
             await gateway.connect(ccp, { wallet, identity: userIdentity, discovery: config.gatewayDiscovery });
             const network = await gateway.getNetwork("default-channel");
-            const contract = network.getContract("simple");
+            const contract = network.getContract("license");
     
-            let transaction = contract.createTransaction("query");
-            let transactionResponse = await transaction.evaluate("a");
-            console.log(transactionResponse);
+            let transaction = contract.createTransaction("ProductContract:GetAllProducts");
+            let transactionResponse = await transaction.evaluate("");
             res.send(transactionResponse);
             return;
         }
@@ -43,6 +42,61 @@ router.get("/query/all",
         res.sendStatus(403);
     }
 );
+
+router.get("/query/user",
+    verifyToken,
+    async (req, res) => {
+        const walletPath = path.join(__dirname, "..", "..", "wallet");
+        const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
+
+        var userIdentity = await wallet.get(req.username);
+
+        if (userIdentity) {
+            const gateway = new fabricNetwork.Gateway();
+            await gateway.connect(ccp, { wallet, identity: userIdentity, discovery: config.gatewayDiscovery });
+            const network = await gateway.getNetwork("default-channel");
+            const contract = network.getContract("license");
+    
+            let transaction = contract.createTransaction("ProductContract:GetProductsForOwner");
+            let transactionResponse = await transaction.evaluate(req.username);
+            res.send(transactionResponse);
+            return;
+        }
+
+        res.sendStatus(403);
+    }
+);
+
+router.post("/license/add",
+    verifyToken,
+    async (req, res) => {
+        const walletPath = path.join(__dirname, "..", "..", "wallet");
+        const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
+
+        var userIdentity = await wallet.get(req.username);
+
+        if (userIdentity) {
+            const gateway = new fabricNetwork.Gateway();
+            await gateway.connect(ccp, { wallet, identity: userIdentity, discovery: config.gatewayDiscovery });
+            const network = await gateway.getNetwork("default-channel");
+            const contract = network.getContract("license");
+
+            let addLicenseTransaction = contract.createTransaction("LicenseContract:PutLicense");
+            let addLicenseTransactionResponse = await addLicenseTransaction.submit([
+                uuidv4(),
+                req.username,
+                new Date().toISOString(),
+                req.body.productid,
+                "filehasn",
+                "1"
+            ]);
+            res.send(addLicenseTransactionResponse);
+            return;
+        }
+
+        res.sendStatus(403);
+    }
+)
 
 router.post("/create",
     verifyToken,
