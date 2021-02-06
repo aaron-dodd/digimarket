@@ -42,6 +42,16 @@ export default function FileUpload() {
     };
 
     const onSubmit = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(document.getElementById("uploadForm"));
+        await fetch('/api/ipfs/upload', {
+            method: "POST",
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "x-access-token": localStorage.getItem("token")
+            },
+            body: formData,
+        });
     };
 
     return (
@@ -49,16 +59,17 @@ export default function FileUpload() {
             <Typography variant="h4" gutterBottom>
                 Upload File
             </Typography>
-            <form onSubmit={onSubmit}>
+            <form id="uploadForm" onSubmit={onSubmit} encType="multipart/form-data">
                 <TextField
                     normal fullWidth
                     className={classes.margin}
                     label="Product Name"
                     type="text"
                     onChange={handleChange('productName')}
-                    value={values.username}
+                    value={values.productName}
                     variant="outlined"
                     placeholder="Product Name"
+                    name="product"
                     InputProps={{
                         startAdornment: (
                         <InputAdornment position="start">
@@ -73,9 +84,10 @@ export default function FileUpload() {
                     label="File"
                     type="file"
                     onChange={handleChange('file')}
-                    value={values.username}
+                    value={values.file}
                     variant="outlined"
                     placeholder="File"
+                    name="file"
                     InputProps={{
                         startAdornment: (
                         <InputAdornment position="start">

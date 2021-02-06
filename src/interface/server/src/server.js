@@ -2,6 +2,7 @@ const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
+const upload = require("express-fileupload");
 
 const api = require("./routes/api");
 const app = express();
@@ -10,6 +11,7 @@ app.use(cors());
 app.use(bodyParser.json({
     extended: true
 }));
+app.use(upload());
 
 const port = process.env.port || 4000;
 
