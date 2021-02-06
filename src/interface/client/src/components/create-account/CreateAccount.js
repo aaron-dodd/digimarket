@@ -101,6 +101,7 @@ export default function CreateAccount() {
                         onChange={handleChange('username')}
                         variant="outlined"
                         placeholder="sample_username"
+                        tabIndex="0"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">
@@ -119,6 +120,7 @@ export default function CreateAccount() {
                         onChange={handleChange('password')}
                         variant="outlined"
                         placeholder="password"
+                        tabIndex="1"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">
@@ -148,6 +150,7 @@ export default function CreateAccount() {
                         onChange={handleChange('confirmPassword')}
                         variant="outlined"
                         placeholder="password"
+                        tabIndex="2"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">
@@ -169,9 +172,9 @@ export default function CreateAccount() {
                     />
                     <Grid container justify="space-between">
                         <Link to="/login" component={RouteLink}>
-                            <Button color="primary">Back</Button>
+                            <Button color="primary" tabIndex="3">Back</Button>
                         </Link>
-                        <Button type="submit" variant="contained" color="primary" disabled={!enableNext}>Next</Button>
+                        <Button type="submit" variant="contained" color="primary" tabIndex="4" disabled={!enableNext}>Next</Button>
                     </Grid>
                 </Paper>
             </form>
