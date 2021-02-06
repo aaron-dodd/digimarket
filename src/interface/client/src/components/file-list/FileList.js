@@ -65,6 +65,34 @@ export default function FileList() {
         setLicenseDialogOpen(true);
     };
 
+    const handleDownloadClick = async (index) => {
+        setSelectedFile(index);
+        await fetch("/api/ipfs/download", {
+            method: "POST",
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "application/json",
+                "x-access-token": localStorage.getItem("token")
+            },
+            body: JSON.stringify({
+                productid: files[index].uuid,
+            }),
+        }).then(async (response) => {
+            return await response.blob();
+        }).then(async (blob) => {
+            console.log(blob);
+            let url = window.URL.createObjectURL(
+                new Blob([blob]),
+            );
+            let anchor = document.createElement("a");
+            anchor.href = url;
+            anchor.download = files[index].filename;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.parentNode.removeChild(anchor);
+        });
+    }
+
     const handleDialogClose = () => {
         setLicenseDialogOpen(false);
     }
@@ -143,10 +171,10 @@ export default function FileList() {
                                 <TableCell>{file.version}</TableCell>
                                 <TableCell>
                                     <ButtonGroup>
-                                        <IconButton onClick={() => {handleLicenseClick(index); } }>
+                                        <IconButton onClick={() => {handleLicenseClick(index); }}>
                                             <GavelIcon />
                                         </IconButton>
-                                        <IconButton>
+                                        <IconButton onClick={() => {handleDownloadClick(index); }}>
                                             <GetAppIcon />
                                         </IconButton>
                                     </ButtonGroup>
