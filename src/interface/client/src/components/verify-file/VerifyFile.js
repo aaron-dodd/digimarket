@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link as RouteLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
@@ -32,10 +32,35 @@ const useStyles = makeStyles((theme) => ({
 
 export default function VerifyFile() {
     const classes = useStyles();
+    const [license, setLicense] = useState("");
+    const [validation, setValidation] = useState({});
+
+    const onSubmit = async (event) => {
+        event.preventDefault();
+        const response = await fetch("/api/license/verify", {
+            method: "POST",
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "x-access-token": localStorage.getItem("token"),
+            },
+            body: JSON.stringify({
+                licensekey: license,
+            }),
+        }).then(async (response) => {
+            return response.json();
+        }).then(async (result) => {
+            console.log(result);
+            setValidation(result);
+        });
+    };
+
+    const changeLicense = (event) => {
+        setLicense(event.target.value);
+    }
 
     return (
         <div className={classes.root}>
-            <form autoComplete="off">
+            <form autoComplete="off" onSubmit={onSubmit}>
                 <Paper className={classes.paper}>
                     <Typography variant="h4" gutterBottom>
                         Verify File
@@ -47,6 +72,8 @@ export default function VerifyFile() {
                         type="text"
                         variant="outlined"
                         placeholder="00000000-0000-0000-0000-000000000000"
+                        value={license}
+                        onChange={changeLicense}
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">
@@ -72,8 +99,11 @@ export default function VerifyFile() {
                     />
                     <Grid container justify="space-between">
                         <span></span>
-                        <Button variant="contained" color="primary">Verify</Button>
+                        <Button type="submit" variant="contained" color="primary">Verify</Button>
                     </Grid>
+                    { validation !== 'undefined' && (
+                        <p>{validation.Reason}</p>
+                    )}
                 </Paper>
             </form>
         </div>
