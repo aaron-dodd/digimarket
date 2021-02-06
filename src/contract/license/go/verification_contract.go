@@ -15,19 +15,21 @@ func (vc *VerificationContract) VerifyOwnership(ctx contractapi.TransactionConte
 	result := new(VerificationResult)
 	result.Valid = true
 
-	existing, getError := ctx.GetStub().GetState(licenseID)
+	existingLicense, getError := ctx.GetStub().GetState(licenseID)
 
 	if getError != nil {
 		return nil, fmt.Errorf("Unable to fetch data from world state")
 	}
 
-	if existing == nil {
-		return nil, fmt.Errorf("License with id %s does not exist", licenseID)
+	if existingLicense == nil {
+		result.Valid = false
+		result.setVerificationResult(VERIFICATION_REASON_ERROR_LICENSE_NOT_FOUND)
+		return result, nil
 	}
 
 	license := new(License)
 
-	unmarshalError := json.Unmarshal(existing, license)
+	unmarshalError := json.Unmarshal(existingLicense, license)
 	if unmarshalError != nil {
 		return nil, fmt.Errorf("Data retrieved from world state for key %s was not of type License", licenseID)
 	}
