@@ -59,7 +59,12 @@ export default function AvailableProducts() {
             {
                 products.map((product) => (
                     <Grid item xs={12} sm={4} md={12} lg={4}>
-                        <ProductListing productTitle={product.filename} productDetails={product.filehash} />
+                        <ProductListing
+                            productId={product.uuid}
+                            productTitle={product.filename}
+                            productHash={product.filehash}
+                            productVersion={product.version}
+                        />
                     </Grid>
                 ))
             }

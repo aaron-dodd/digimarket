@@ -82,14 +82,20 @@ router.post("/license/add",
             const contract = network.getContract("license");
 
             let addLicenseTransaction = contract.createTransaction("LicenseContract:PutLicense");
-            let addLicenseTransactionResponse = await addLicenseTransaction.submit([
+
+            // id string, owner string, creationTime time.Time, contentID string, versionNumber int, expiration time.Time
+            let expirationDate = new Date();
+            expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+            console.log(expirationDate);
+
+            let addLicenseTransactionResponse = await addLicenseTransaction.submit(
                 uuidv4(),
                 req.username,
                 new Date().toISOString(),
                 req.body.productid,
-                "filehasn",
-                "1"
-            ]);
+                req.body.productversion,
+                expirationDate.toISOString(),
+            );
             res.send(addLicenseTransactionResponse);
             return;
         }

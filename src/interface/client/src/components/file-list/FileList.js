@@ -189,7 +189,7 @@ export default function FileList() {
                 <Dialog open={licenseDialogOpen} onClose={handleDialogClose}>
                     <DialogContent>
                         <Typography variant="h5" gutterBottom>
-                            Add license to {files[selectedFile].productName}
+                            Add license to {files[selectedFile].filename}
                         </Typography>
                         <TextField
                             normal fullWidth
