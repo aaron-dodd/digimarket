@@ -26,7 +26,7 @@ router.post("/verify",
         const walletPath = path.join(__dirname, "..", "..", "wallet");
         const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
 
-        var identity = await wallet.get(config.adminUsername);
+        var identity = await wallet.get(req.username);
 
         if (identity) {
             const gateway = new fabricNetwork.Gateway();

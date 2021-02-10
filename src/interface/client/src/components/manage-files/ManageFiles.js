@@ -25,13 +25,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ManageFiles() {
     const classes = useStyles();
+    const [reload, setReload] = React.useState(false);
 
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                    <FileUpload />
+                    <FileUpload setReload={setReload} />
                     <br></br>
-                    <FileList />
+                    <FileList reload={reload} setReload={setReload} />
             </Paper>
         </div>
     )

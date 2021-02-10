@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function FileUpload() {
+export default function FileUpload(props) {
     const classes = useStyles();
     const [enableUpload, setEnableUpload] = useState(true);
     const [values, setValues] = useState({
@@ -51,6 +51,8 @@ export default function FileUpload() {
                 "x-access-token": localStorage.getItem("token")
             },
             body: formData,
+        }).then(async (response) => {
+            props.setReload(true);
         });
     };
 

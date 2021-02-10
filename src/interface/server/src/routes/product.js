@@ -3,6 +3,8 @@ const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const path = require("path");
 
+const ipfsCreateClient = require("ipfs-http-client");
+
 var fabricCAClient = require("fabric-ca-client");
 var fabricCommon = require("fabric-common");
 var fabricNetwork = require("fabric-network");
@@ -19,21 +21,15 @@ const ccp = JSON.parse(ccpJSON);
 
 let router = express.Router();
 
+const ipfsClient = ipfsCreateClient("http://localhost:5001/");
+
 router.post("/upload",
     verifyToken,
     async (req, res) => {
         console.log(req.files);
-
-        // Add file to the web server
         let file = req.files.file;
-        const filePath = path.resolve(__dirname, "..", "..", "files");
-        if (!fs.existsSync(filePath)) {
-            fs.mkdirSync(filePath);
-        }
-        file.mv(path.resolve(filePath, file.name), (err) => {
-            console.log(err);
-        });
-
+        console.log(file);
+        
         // Track product on ledger
         const walletPath = path.join(__dirname, "..", "..", "wallet");
         const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
@@ -41,37 +37,37 @@ router.post("/upload",
         var userIdentity = await wallet.get(req.username);
 
         if (userIdentity) {
-            const gateway = new fabricNetwork.Gateway();
-            await gateway.connect(ccp, { wallet, identity: userIdentity, discovery: config.gatewayDiscovery });
-            const network = await gateway.getNetwork("default-channel");
-            const contract = network.getContract("license");
-    
-            let transaction = contract.createTransaction("ProductContract:PutProduct");
-
-            // Hash filehash
-            sha1Hash = crypto.createHash("sha1");
-            sha1Hash.setDefaultEncoding("base64");
-            sha1Hash.write(file.Buffer);
-            sha1Hash.end();
-
-            transaction.setTransient({
-                ["filehash"]: Buffer.from(sha1Hash.read()),
-                ["filedata"]: file.Buffer,
+            // Add file to IPFS
+            let fileHash = "";
+            await ipfsClient.add(file.data).then((res) => {
+                console.log(res);
+                fileHash = res.cid;
             });
+            console.log(fileHash);
 
-            // id string, owner string, creationTime time.Time, filename string, filehash string, version int
-            let transactionResponse = await transaction.submit(
-                uuidv4(),
-                req.username,
-                new Date().toISOString(),
-                file.name,
-                "1" // TODO: do something cool with version number
-            );
-            res.send(transactionResponse);
-            return;
+            if (fileHash !== "") {
+                const gateway = new fabricNetwork.Gateway();
+                await gateway.connect(ccp, { wallet, identity: userIdentity, discovery: config.gatewayDiscovery });
+                const network = await gateway.getNetwork("default-channel");
+                const contract = network.getContract("license");
+        
+                let transaction = contract.createTransaction("ProductContract:PutProduct");
+    
+                // id string, owner string, creationTime time.Time, filename string, filehash string, version int
+                let transactionResponse = await transaction.submit(
+                    uuidv4(),
+                    req.username,
+                    new Date().toISOString(),
+                    file.name,
+                    fileHash,
+                    "1" // TODO: do something cool with version number
+                );
+                console.log(transactionResponse);
+                res.send(transactionResponse);
+            }
+        } else {
+            res.sendStatus(403);
         }
-
-        res.sendStatus(403);
     }
 );
 
@@ -96,14 +92,26 @@ router.post("/download",
             let transactionObject = JSON.parse(transactionResponse);
 
             const filename = transactionObject.filename;
-            console.log(filename);
+            const filehash = transactionObject.filehash;
+            console.log(filehash);
             const filePath = path.resolve(__dirname, "..", "..", "files", filename);
-            console.log(filePath);
-            res.sendFile(filePath, (err) => {
-                if (err) {
-                    res.status(err.status).end();
+
+            let data = [];
+
+            const files = ipfsClient.get(filehash);
+            for await (const file of files) {
+                if (file.type === "file") {
+                    for await (const chunk of file.content) {
+                        res.write(chunk);
+                    }
                 }
-            });
+            }
+
+            console.log("end");
+            
+            console.log(filePath);
+            console.log(data);
+            res.end();
         } else {
             res.sendStatus(404);
         }

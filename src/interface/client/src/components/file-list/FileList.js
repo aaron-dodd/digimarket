@@ -54,7 +54,7 @@ function LicenseDialog(props) {
     )
 }
 
-export default function FileList() {
+export default function FileList(props) {
     const classes = useStyles();
     const [files, setFiles] = useState([]);
     const [licenseDialogOpen, setLicenseDialogOpen] = React.useState(false);
@@ -78,7 +78,7 @@ export default function FileList() {
                 productid: files[index].uuid,
             }),
         }).then(async (response) => {
-            return await response.blob();
+            return response.blob();
         }).then(async (blob) => {
             console.log(blob);
             let url = window.URL.createObjectURL(
@@ -140,7 +140,7 @@ export default function FileList() {
 
     useEffect(() => {
         fetchFiles();
-    }, []);
+    }, [props.reload]);
 
 
     return (

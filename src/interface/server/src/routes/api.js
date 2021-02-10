@@ -1,5 +1,4 @@
 const express = require("express");
-const ipfs = require("./ipfs");
 const license = require("./license");
 const product = require("./product");
 const user = require("./user");
@@ -32,7 +31,6 @@ router.get("/", (req, res) => {
 });
 
 router.use("/license", license);
-router.use("/ipfs", ipfs);
 router.use("/product", product);
 router.use("/user", user);
 
