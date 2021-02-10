@@ -8,7 +8,9 @@ import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Link from '@material-ui/core/Link';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
+import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Visibility from '@material-ui/icons/Visibility';
@@ -38,6 +40,7 @@ export default function CreateAccount() {
         confirmPassword: '',
         showPassword: false,
         showConfirmPassword: false,
+        mspid: '',
     });
 
     const handleChange = (prop) => (event) => {
@@ -65,7 +68,8 @@ export default function CreateAccount() {
             (values.username.length > 0) &&
             (values.password === values.confirmPassword) &&
             (values.password.length > 0) &&
-            (values.confirmPassword.length > 0)
+            (values.confirmPassword.length > 0) &&
+            (values.mspid.length > 0)
         );
     });
 
@@ -81,6 +85,7 @@ export default function CreateAccount() {
             body: JSON.stringify({
                 username: values.username,
                 password: values.password,
+                mspid: values.mspid,
             }),
         });
     };
@@ -170,6 +175,18 @@ export default function CreateAccount() {
                             ),
                         }}
                     />
+                    <Select
+                        normal fullWidth
+                        className={classes.margin}
+                        onChange={handleChange('mspid')}
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
+                        </MenuItem>
+                        <MenuItem value="org0-digimarket-com">Organisation 0</MenuItem>
+                        <MenuItem value="org1-digimarket-com">Organisation 1</MenuItem>
+                        <MenuItem value="org2-digimarket-com">Organisation 2</MenuItem>
+                    </Select>
                     <Grid container justify="space-between">
                         <Link to="/login" component={RouteLink}>
                             <Button color="primary" tabIndex="3">Back</Button>

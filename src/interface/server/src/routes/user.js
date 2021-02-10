@@ -63,6 +63,7 @@ router.post("/signup",
     async (req, res) => {
         var userName = req.body.username;
         var userSecret = req.body.password;
+        var userMSPID = req.body.mspid;
 
         const caURL = ccp.certificateAuthorities["ca1.org1.digimarket.com"].url;
         console.log(caURL);
@@ -125,7 +126,7 @@ router.post("/signup",
                 certificate: userEnrollment.certificate,
                 privateKey: userEnrollment.key.toBytes(),
             },
-            mspId: config.orgMSPID,
+            mspId: userMSPID,
             type: "X.509",
         };
 
