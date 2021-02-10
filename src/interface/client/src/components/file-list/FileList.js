@@ -67,7 +67,7 @@ export default function FileList() {
 
     const handleDownloadClick = async (index) => {
         setSelectedFile(index);
-        await fetch("/api/ipfs/download", {
+        await fetch("/api/product/download", {
             method: "POST",
             headers: {
                 "Access-Control-Allow-Origin": "*",

@@ -44,7 +44,7 @@ export default function FileUpload() {
     const onSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(document.getElementById("uploadForm"));
-        await fetch('/api/ipfs/upload', {
+        await fetch('/api/product/upload', {
             method: "POST",
             headers: {
                 "Access-Control-Allow-Origin": "*",
