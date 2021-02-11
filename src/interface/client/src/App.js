@@ -27,6 +27,7 @@ import AvailableProducts from './components/available-products/AvailableProducts
 import BlockchainStatus from './components/blockchain-status/BlockchainStatus';
 import CreateAccount from './components/create-account/CreateAccount';
 import Home from './components/home/Home';
+import LicensedProducts from './components/licensed-products/LicensedProducts';
 import Login from './components/login/Login';
 import ManageFiles from './components/manage-files/ManageFiles';
 import TransactionHistory from './components/transaction-history/TransactionHistory';
@@ -100,6 +101,7 @@ export default function App(props) {
                     {icon: <AccountCircleIcon />, text: 'Login', href: "/login", protect: false, login: true },
                     {icon: <VerifiedUserIcon />, text: 'Verify File', href: "/verify-file", protect: true },
                     {icon: <ListIcon />, text: 'View Available Products', href: "/available-products", protect: true },
+                    {icon: <ListIcon />, text: 'Download Licensed Products', href: "/licensed-products", protect: true },
                     {icon: <ListIcon />, text: 'View Transaction History', href: "/transaction-history", protect: true },
                     {icon: <ListIcon />, text: 'View Blockchain Status', href: "/blockchain-status", protect: true },
                     {icon: <ListIcon />, text: 'Manage Files', href: "/manage-files", protect: true },
@@ -204,6 +206,7 @@ export default function App(props) {
                         <ProtectedRoute exact path="/login" authenticated={userToken === null} component={Login} />
                         <ProtectedRoute exact path="/available-products" authenticated={userToken !== null} component={AvailableProducts} />
                         <ProtectedRoute exact path="/blockchain-status" authenticated={userToken !== null} component={BlockchainStatus} />
+                        <ProtectedRoute exact path="/licensed-products" authenticated={userToken !== null} component={LicensedProducts} />
                         <ProtectedRoute exact path="/manage-files" authenticated={userToken !== null} component={ManageFiles} />
                         <ProtectedRoute exact path="/transaction-history" authenticated={userToken !== null} component={TransactionHistory} />
                         <ProtectedRoute exact path="/verify-file" authenticated={userToken !== null} component={VerifyFile} />

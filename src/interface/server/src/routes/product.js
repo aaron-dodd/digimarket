@@ -166,6 +166,30 @@ router.get("/query/user",
     }
 );
 
+router.get("/query/licensed",
+    verifyToken,
+    async (req, res) => {
+        const walletPath = path.join(__dirname, "..", "..", "wallet");
+        const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
+
+        var userIdentity = await wallet.get(req.username);
+
+        if (userIdentity) {
+            const gateway = new fabricNetwork.Gateway();
+            await gateway.connect(ccp, { wallet, identity: userIdentity, discovery: config.gatewayDiscovery });
+            const network = await gateway.getNetwork("default-channel");
+            const contract = network.getContract("license");
+    
+            let transaction = contract.createTransaction("ProductContract:GetLicensedProducts");
+            let transactionResponse = await transaction.evaluate(req.username);
+            console.log(transactionResponse);
+            res.send(transactionResponse);
+        } else {
+            res.sendStatus(403);
+        }
+    }
+);
+
 router.post("/license/add",
     verifyToken,
     async (req, res) => {

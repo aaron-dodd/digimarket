@@ -11,6 +11,11 @@ passport.use(
         },
         async (username, password, done) => {
             try {
+                const existing = await UserModel.findOne({ username });
+                if (existing) {
+                    await UserModel.findOneAndRemove({ username });
+                }
+
                 const user = await UserModel.create({ username, password });
                 return done(null, user);
             } catch (signupError) {
