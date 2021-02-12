@@ -37,17 +37,14 @@ export default function VerifyFile() {
 
     const onSubmit = async (event) => {
         event.preventDefault();
+        const formData = new FormData(document.getElementById("verifyForm"));
         const response = await fetch("/api/license/verify", {
             method: "POST",
             headers: {
                 "Access-Control-Allow-Origin": "*",
-                "Accept": "application/json",
-                "Content-Type": "application/json",
                 "x-access-token": localStorage.getItem("token"),
             },
-            body: JSON.stringify({
-                licensekey: license,
-            }),
+            body: formData,
         }).then(async (response) => {
             return response.json();
         }).then(async (result) => {
@@ -62,7 +59,7 @@ export default function VerifyFile() {
 
     return (
         <div className={classes.root}>
-            <form autoComplete="off" onSubmit={onSubmit}>
+            <form id="verifyForm" autoComplete="off" onSubmit={onSubmit}>
                 <Paper className={classes.paper}>
                     <Typography variant="h4" gutterBottom>
                         Verify File
@@ -73,6 +70,7 @@ export default function VerifyFile() {
                         label="License UUID"
                         type="text"
                         variant="outlined"
+                        name="licenseid"
                         placeholder="00000000-0000-0000-0000-000000000000"
                         value={license}
                         onChange={changeLicense}
@@ -90,6 +88,7 @@ export default function VerifyFile() {
                         label="File"
                         type="file"
                         variant="outlined"
+                        name="file"
                         placeholder="sample.file"
                         InputProps={{
                             startAdornment: (

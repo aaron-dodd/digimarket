@@ -106,6 +106,35 @@ func (lc *LicenseContract) GetLicensesForOwner(ctx contractapi.TransactionContex
 	return resultList, nil
 }
 
+func (lc *LicenseContract) GetLicenseForOwnedProduct(ctx contractapi.TransactionContextInterface, owner string, productid string) (*License, error) {
+	queryString := fmt.Sprintf("{\"selector\": {\"assetType\": \"license\", \"owner\": \"%s\", \"contentid\": \"%s\"}}", owner, productid)
+
+	resultsIterator, queryErr := ctx.GetStub().GetQueryResult(queryString)
+	if (queryErr != nil) {
+		return nil, queryErr
+	}
+	defer resultsIterator.Close()
+
+	var resultList []*License
+
+	for resultsIterator.HasNext() {
+		resultResponse, nextErr := resultsIterator.Next()
+		if nextErr != nil {
+			return nil, nextErr
+		}
+
+		result := new(License)
+		unmarshalError := json.Unmarshal(resultResponse.Value, result)
+		if (unmarshalError != nil) {
+			return nil, unmarshalError
+		}
+
+		resultList = append(resultList, result);
+	}
+
+	return resultList[0], nil
+}
+
 func (lc *LicenseContract) PutLicense(ctx contractapi.TransactionContextInterface, id string, owner string, creationTime time.Time, contentID string, versionNumber int, expiration time.Time) (*License, error) {
 	existing, getError := ctx.GetStub().GetState(id)
 

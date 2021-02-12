@@ -3,6 +3,9 @@ let router = express.Router();
 const fs = require("fs");
 const path = require("path");
 
+const ipfsCreateClient = require("ipfs-http-client");
+const ipfsClient = ipfsCreateClient("http://localhost:5001/");
+
 var verifyToken = require("../middleware/auth/verify-token");
 
 var fabricCAClient = require("fabric-ca-client");
@@ -20,24 +23,25 @@ const ccp = JSON.parse(ccpJSON);
 router.post("/verify",
     verifyToken,
     async (req, res) => {
-        const licenseKey = req.body.licensekey;
-        console.log(licenseKey);
+        console.log(req);
+        const licenseKey = req.body.licenseid;
+        const file = req.files.file;
 
         const walletPath = path.join(__dirname, "..", "..", "wallet");
         const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
-
+        
         var identity = await wallet.get(req.username);
-
+        
         if (identity) {
             const gateway = new fabricNetwork.Gateway();
             await gateway.connect(ccp, { wallet, identity: identity, discovery: config.gatewayDiscovery });
             const network = await gateway.getNetwork("default-channel");
             const contract = network.getContract("license");
-    
+            
             let transaction = contract.createTransaction("VerificationContract:VerifyOwnership");
             try {
-                let transactionResponse = await transaction.evaluate(licenseKey,"file");
-                console.log(transactionResponse);
+                var hash = await ipfsClient.add(file.data, { onlyHash: true });
+                let transactionResponse = await transaction.evaluate(licenseKey, hash.cid);
                 res.send(transactionResponse);
                 return;
             } catch (error) {

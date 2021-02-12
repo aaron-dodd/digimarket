@@ -26,9 +26,7 @@ const ipfsClient = ipfsCreateClient("http://localhost:5001/");
 router.post("/upload",
     verifyToken,
     async (req, res) => {
-        console.log(req.files);
         let file = req.files.file;
-        console.log(file);
         
         // Track product on ledger
         const walletPath = path.join(__dirname, "..", "..", "wallet");
@@ -220,10 +218,32 @@ router.post("/license/add",
                 expirationDate.toISOString(),
             );
             res.send(addLicenseTransactionResponse);
-            return;
+        } else {
+            res.sendStatus(403);
         }
+    }
+)
 
-        res.sendStatus(403);
+router.post("/license/get",
+    verifyToken,
+    async (req, res) => {
+        const walletPath = path.join(__dirname, "..", "..", "wallet");
+        const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
+
+        var userIdentity = await wallet.get(req.username);
+
+        if (userIdentity) {
+            const gateway = new fabricNetwork.Gateway();
+            await gateway.connect(ccp, { wallet, identity: userIdentity, discovery: config.gatewayDiscovery });
+            const network = await gateway.getNetwork("default-channel");
+            const contract = network.getContract("license");
+
+            let getLicenseTransaction = contract.createTransaction("LicenseContract:GetLicenseForOwnedProduct");
+            let getLicenseTransactionResponse = await getLicenseTransaction.submit(req.username, req.body.productid);
+            res.send(getLicenseTransactionResponse);
+        } else {
+            res.sendStatus(403);
+        }
     }
 )
 

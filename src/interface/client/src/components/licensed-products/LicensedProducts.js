@@ -2,10 +2,13 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
+import SearchIcon from '@material-ui/icons/Search';
 import Typography from '@material-ui/core/Typography';
 
 import Table from '@material-ui/core/Table';
@@ -36,7 +39,29 @@ const useStyles = makeStyles((theme) => ({
 export default function LicensedProducts() {
     const classes = useStyles();
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [licenseDialogOpen, setLicenseDialogOpen] = useState(false);
+    const [license, setLicense] = useState(null);
     const [products, setProducts] = useState([]);
+
+    const handleLicenseClick = async (index) => {
+        setSelectedProduct(index);
+        await fetch("/api/product/license/get", {
+            method: "POST",
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "application/json",
+                "x-access-token": localStorage.getItem("token")
+            },
+            body: JSON.stringify({
+                productid: products[index].uuid,
+            }),
+        }).then(async (response) => {
+            return response.json();
+        }).then(async (data) => {
+            setLicense(data);
+            setLicenseDialogOpen(true);
+        });
+    }
 
     const handleDownloadClick = async (index) => {
         setSelectedProduct(index);
@@ -82,6 +107,9 @@ export default function LicensedProducts() {
         });
     }
 
+    const handleDialogClose = () => {
+        setLicenseDialogOpen(false);
+    }
     useEffect(() => {
         fetchProducts();
     }, []);
@@ -118,6 +146,9 @@ export default function LicensedProducts() {
                                         <TableCell>{product.version}</TableCell>
                                         <TableCell>
                                             <ButtonGroup>
+                                                <IconButton onClick={() => { handleLicenseClick(index); }}>
+                                                    <SearchIcon />
+                                                </IconButton>
                                                 <IconButton onClick={() => { handleDownloadClick(index); }}>
                                                     <GetAppIcon />
                                                 </IconButton>
@@ -129,6 +160,22 @@ export default function LicensedProducts() {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                { products !== [] && selectedProduct !== null && license !== null && (
+                <Dialog open={licenseDialogOpen} onClose={handleDialogClose}>
+                    <DialogContent>
+                        <Typography variant="h5" gutterBottom>
+                            License key for {products[selectedProduct].filename}
+                        </Typography>
+                        <TextField
+                            normal fullWidth aria-readonly
+                            id="text"
+                            label="License Key"
+                            type="text"
+                            value={license.uuid}
+                        />
+                    </DialogContent>
+                </Dialog>
+            )}
             </Grid>
         </Paper>
     )
