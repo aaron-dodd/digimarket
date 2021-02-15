@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const path = require("path");
 
+const verifyToken = require("../middleware/auth/verify-token");
+
 var fabricCAClient = require("fabric-ca-client");
 var fabricCommon = require("fabric-common");
 var fabricNetwork = require("fabric-network");
@@ -136,5 +138,23 @@ router.post("/signup",
         res.json();
     }
 );
+
+router.post("/wallet/download",
+    verifyToken,
+    async (req, res) => {
+        const walletPath = path.join(__dirname, "..", "..", "wallet");
+        const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
+        
+        var userIdentity = await wallet.get(req.username);
+        
+        if (userIdentity) {
+            res.sendFile(path.join(walletPath, req.username + ".id"), (err) => {
+                if (err) {
+                    res.sendStatus(err.status).end()
+                }
+            });
+        }
+    }
+)
 
 module.exports = router;

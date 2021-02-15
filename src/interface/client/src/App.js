@@ -2,7 +2,7 @@ import React, { useState, useContext, useMemo } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import { Link as RouterLink } from 'react-router-dom';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme, } from '@material-ui/core/styles';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import AppBar from '@material-ui/core/AppBar';
 import Avatar from '@material-ui/core/Avatar';
@@ -63,6 +63,10 @@ const useStyles = makeStyles((theme) => ({
     drawerPaper: {
       width: drawerWidth,
     },
+    downloadWallet: {
+        color: "#FFF",
+        marginRight: theme.spacing(2),
+    },
     content: {
       flexGrow: 1,
       padding: theme.spacing(3),
@@ -86,6 +90,31 @@ export default function App(props) {
             setUserToken(null);
         }
     }));
+
+    const downloadWallet = async (event) => {
+        event.preventDefault();
+        fetch("/api/user/wallet/download", {
+            method: "POST",
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "application/json",
+                "x-access-token": localStorage.getItem("token")
+            },
+            body: null,
+        }).then(async (response) => {
+            return response.blob();
+        }).then(async (blob) => {
+            let url = URL.createObjectURL(
+                new Blob([blob]),
+            );
+            let anchor = document.createElement("a");
+            anchor.href = url;
+            anchor.download = "wallet.id"
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.parentNode.removeChild(anchor);
+        });
+    }
 
     const handleDrawerToggle = () => {
       setMobileOpen(!mobileOpen);
@@ -163,7 +192,10 @@ export default function App(props) {
                             Digi Market
                         </Typography>
                         { userToken !== null ?
-                            <Button variant="contained" color="secondary" onClick={() => { authContext.logout() }}>Logout</Button> : <span></span>
+                            <div>
+                                <Button className={classes.downloadWallet} onClick={downloadWallet}>download wallet</Button>
+                                <Button variant="contained" color="secondary" onClick={() => { authContext.logout() }}>Logout</Button>
+                            </div> : <span></span>
                         }
                     </Toolbar>
                 </AppBar>
