@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link as RouteLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
 import Button from '@material-ui/core/Button';
 import EmailIcon from '@material-ui/icons/Email';
 import Grid from '@material-ui/core/Grid';
@@ -38,6 +39,7 @@ export default function Login(props) {
         username: '',
         password: '',
         showPassword: false,
+        walletFile: '',
     });
 
     const handleChange = (prop) => (event) => {
@@ -54,17 +56,14 @@ export default function Login(props) {
 
     const onSubmit = async (event) => {
         event.preventDefault();
+        const formData = new FormData(document.getElementById("loginForm"));
         const response = await fetch('/api/user/login', {
             method: "POST",
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Accept": "application/json",
-                "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                username: values.username,
-                password: values.password,
-            }),
+            body: formData,
         }).then(async (response) => {
             return response.json();
         }).then(async (result) => {
@@ -76,11 +75,12 @@ export default function Login(props) {
     };
 
     const { username, password } = values;
-    const enableNext = username.length > 0 && password.length > 0;
+    const { walletFile } = values;
+    const enableNext = (username.length > 0 && password.length > 0) || (walletFile.length > 0);
 
     return (
         <div className={classes.root}>
-            <form autoComplete="off" onSubmit={onSubmit}>
+            <form id="loginForm" autoComplete="off" onSubmit={onSubmit}>
                 <Paper className={classes.paper}>
                     <Typography variant="h4" gutterBottom>
                         Login
@@ -94,6 +94,7 @@ export default function Login(props) {
                         value={values.username}
                         variant="outlined"
                         placeholder="sample_username"
+                        name="username"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">
@@ -112,6 +113,7 @@ export default function Login(props) {
                         value={values.password}
                         variant="outlined"
                         placeholder="password"
+                        name="password"
                         InputProps={{
                             startAdornment: (
                             <InputAdornment position="start">
@@ -128,6 +130,24 @@ export default function Login(props) {
                                         {values.showPassword ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
                                 </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <TextField
+                        normal fullWidth
+                        className={classes.margin}
+                        label="Wallet File"
+                        type="file"
+                        onChange={handleChange('walletFile')}
+                        value={values.file}
+                        variant="outlined"
+                        placeholder="Wallet File"
+                        name="walletFile"
+                        InputProps={{
+                            startAdornment: (
+                            <InputAdornment position="start">
+                                <AttachFileIcon />
+                            </InputAdornment>
                             ),
                         }}
                     />

@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const express = require("express");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
@@ -11,7 +12,7 @@ var fabricCommon = require("fabric-common");
 var fabricNetwork = require("fabric-network");
 
 require("../middleware/auth/authentication");
-const User = require("../model/user");
+const UserModel = require("../model/user");
 
 const configPath = path.join(__dirname, "..", "..", "config", "config.json");
 const configJSON = fs.readFileSync(configPath, "utf8");
@@ -26,37 +27,76 @@ let router = express.Router();
 router.post(
     "/login",
     async (req, res, next) => {
-        passport.authenticate(
-            "loginStrategy",
-            async (err, user, info) => {
-                try {
-                    if (err || !user) {
-                        return res.json({
-                            authenticated: false,
-                            message: info.message,
-                        });
-                    }
+        if (req.files !== undefined && req.files !== null) {
+            let file = req.files.walletFile;
+            // Get uploaded file hash
+            let uploadedFileHasher = crypto.createHash("sha1");
+            const uploadedFileHash = uploadedFileHasher.update(file.data).digest("base64");
+            console.log(uploadedFileHash)
+            let walletFileHash;
+            let username = "";
 
-                    req.login(
-                        user,
-                        { session: false },
-                        async (error) => {
-                            if (error) return next(error);
+            // Search through wallet files looking for the correct one
+            const walletPath = path.join(__dirname, "..", "..", "wallet");
+            fs.readdirSync(walletPath).forEach(f => {
+                const absPath = path.join(walletPath, f);
+                const data = fs.readFileSync(absPath);
+                let walletHasher = crypto.createHash("sha1");
+                walletFileHash = walletHasher.update(data).digest("base64");
+                if (uploadedFileHash == walletFileHash) {
+                    console.log("hashes match: " + walletFileHash);
 
-                            const body = { _id: user._id, username: user.username };
-                            const token = jwt.sign({ user: body }, "SECRET_JWT_SIGN_TOKEN");
+                    // get username from uploaded wallet
+                    username = f.substr(0, f.lastIndexOf("."));
+                    console.log(username);
+                }
+            });
 
+            console.log(username);
+
+            if (username.length > 0) {
+                const user = await UserModel.findOne({ username });
+                const body = { _id: user._id, username: user.username };
+                const token = jwt.sign({ user: body }, "SECRET_JWT_SIGN_TOKEN");
+
+                return res.json({
+                    authenticated: true,
+                    token: token,
+                });
+            }
+        } else {
+            passport.authenticate(
+                "loginStrategy",
+                async (err, user, info) => {
+                    try {
+                        if (err || !user) {
                             return res.json({
-                                authenticated: true,
-                                token: token,
+                                authenticated: false,
+                                message: info.message,
                             });
                         }
-                    );
-                } catch (error) {
-                    return next(error);
+
+                        req.login(
+                            user,
+                            { session: false },
+                            async (error) => {
+                                if (error) return next(error);
+
+                                const body = { _id: user._id, username: user.username };
+                                const token = jwt.sign({ user: body }, "SECRET_JWT_SIGN_TOKEN");
+
+                                return res.json({
+                                    authenticated: true,
+                                    token: token,
+                                });
+                            }
+                        );
+                    } catch (error) {
+                        return next(error);
+                    }
                 }
-            }
-        )(req, res, next);
+            )(req, res, next);
+        }
     }
 );
 
@@ -144,9 +184,9 @@ router.post("/wallet/download",
     async (req, res) => {
         const walletPath = path.join(__dirname, "..", "..", "wallet");
         const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
-        
+
         var userIdentity = await wallet.get(req.username);
-        
+
         if (userIdentity) {
             res.sendFile(path.join(walletPath, req.username + ".id"), (err) => {
                 if (err) {
