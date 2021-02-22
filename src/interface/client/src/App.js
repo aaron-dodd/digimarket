@@ -131,8 +131,6 @@ export default function App(props) {
                     {icon: <VerifiedUserIcon />, text: 'Verify File', href: "/verify-file", protect: true },
                     {icon: <ListIcon />, text: 'View Available Products', href: "/available-products", protect: true },
                     {icon: <ListIcon />, text: 'Download Licensed Products', href: "/licensed-products", protect: true },
-                    {icon: <ListIcon />, text: 'View Transaction History', href: "/transaction-history", protect: true },
-                    {icon: <ListIcon />, text: 'View Blockchain Status', href: "/blockchain-status", protect: true },
                     {icon: <ListIcon />, text: 'Manage Files', href: "/manage-files", protect: true },
                 ].map((pair) => {
                     if (pair.protect) {
@@ -237,10 +235,8 @@ export default function App(props) {
                         <Route exact path="/create-account" authenticated={userToken === null} component={CreateAccount} />
                         <ProtectedRoute exact path="/login" authenticated={userToken === null} component={Login} />
                         <ProtectedRoute exact path="/available-products" authenticated={userToken !== null} component={AvailableProducts} />
-                        <ProtectedRoute exact path="/blockchain-status" authenticated={userToken !== null} component={BlockchainStatus} />
                         <ProtectedRoute exact path="/licensed-products" authenticated={userToken !== null} component={LicensedProducts} />
                         <ProtectedRoute exact path="/manage-files" authenticated={userToken !== null} component={ManageFiles} />
-                        <ProtectedRoute exact path="/transaction-history" authenticated={userToken !== null} component={TransactionHistory} />
                         <ProtectedRoute exact path="/verify-file" authenticated={userToken !== null} component={VerifyFile} />
                     </Switch>
                 </main>
