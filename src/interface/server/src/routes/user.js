@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 const express = require("express");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
@@ -154,26 +155,34 @@ router.post("/signup",
         const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
         const adminUser = await provider.getUserContext(adminIdentity, config.adminUsername);
 
-        await fcs.register({
-            affiliation: config.defaultAffiliation,
-            enrollmentID: userName,
-            enrollmentSecret: userSecret,
-            role: "client"
-        }, adminUser);
+        try {
+            await fcs.register({
+                affiliation: config.defaultAffiliation,
+                enrollmentID: userName,
+                enrollmentSecret: userSecret,
+                role: "client"
+            }, adminUser);
+        } catch {
+            // skip if user is already registered. simply attempt enrol although re-enrol may also fail due to hyperledger network permissions.
+        }
 
-        const userEnrollment = await fcs.enroll({ enrollmentID: userName, enrollmentSecret: userSecret });
+        try {
+            const userEnrollment = await fcs.enroll({ enrollmentID: userName, enrollmentSecret: userSecret });
 
-        const userIdentity = {
-            credentials: {
-                certificate: userEnrollment.certificate,
-                privateKey: userEnrollment.key.toBytes(),
-            },
-            mspId: userMSPID,
-            type: "X.509",
-        };
+            const userIdentity = {
+                credentials: {
+                    certificate: userEnrollment.certificate,
+                    privateKey: userEnrollment.key.toBytes(),
+                },
+                mspId: userMSPID,
+                type: "X.509",
+            };
 
-        // Create wallet
-        wallet.put(userName, userIdentity);
+            // Create wallet
+            wallet.put(userName, userIdentity);
+        } catch {
+            // skip here and do nothing if we enocunter an error
+        }
 
         res.json();
     }
@@ -193,6 +202,44 @@ router.post("/wallet/download",
                     res.sendStatus(err.status).end()
                 }
             });
+        }
+    }
+)
+
+router.post("/update-password",
+    verifyToken,
+    async (req, res) => {
+        const username = req.username;
+        const currentPassword = req.body.currentPassword;
+        const newPassword = req.body.newPassword;
+
+        console.log(username);
+        console.log(currentPassword);
+        console.log(newPassword);
+
+        const user = await UserModel.findOne({ username });
+        console.log(user);
+        const validPassword = await user.isValidPassword(currentPassword);
+        console.log(validPassword);
+
+        if (validPassword) {
+            const result = await user.updateOne({ password: await bcrypt.hash(newPassword, 10) });
+            console.log(result);
+        }
+    }
+)
+
+router.delete("/delete",
+    verifyToken,
+    async (req, res) => {
+        const walletPath = path.join(__dirname, "..", "..", "wallet");
+        const wallet = await fabricNetwork.Wallets.newFileSystemWallet(walletPath);
+        const username = req.username;
+
+        var userIdentity = await wallet.get(username);
+
+        if (userIdentity) {
+            await UserModel.deleteOne({ username });
         }
     }
 )

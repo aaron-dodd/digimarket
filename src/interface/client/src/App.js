@@ -30,6 +30,7 @@ import Home from './components/home/Home';
 import LicensedProducts from './components/licensed-products/LicensedProducts';
 import Login from './components/login/Login';
 import ManageFiles from './components/manage-files/ManageFiles';
+import ManageUser from './components/manage-user/ManageUser';
 import TransactionHistory from './components/transaction-history/TransactionHistory';
 import VerifyFile from './components/verify-file/VerifyFile';
 
@@ -132,6 +133,7 @@ export default function App(props) {
                     {icon: <ListIcon />, text: 'View Available Products', href: "/available-products", protect: true },
                     {icon: <ListIcon />, text: 'Download Licensed Products', href: "/licensed-products", protect: true },
                     {icon: <ListIcon />, text: 'Manage Files', href: "/manage-files", protect: true },
+                    {icon: <ListIcon />, text: 'Edit Account', href: "/manage-user", protect: true },
                 ].map((pair) => {
                     if (pair.protect) {
                         if (userToken !== null) {
@@ -238,6 +240,7 @@ export default function App(props) {
                         <ProtectedRoute exact path="/licensed-products" authenticated={userToken !== null} component={LicensedProducts} />
                         <ProtectedRoute exact path="/manage-files" authenticated={userToken !== null} component={ManageFiles} />
                         <ProtectedRoute exact path="/verify-file" authenticated={userToken !== null} component={VerifyFile} />
+                        <ProtectedRoute exact path="/manage-user" authenticated={userToken !== null} component={ManageUser} />
                     </Switch>
                 </main>
             </Router>
