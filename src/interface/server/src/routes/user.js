@@ -34,7 +34,7 @@ router.post(
             let uploadedFileHasher = crypto.createHash("sha1");
             const uploadedFileHash = uploadedFileHasher.update(file.data).digest("base64");
             console.log(uploadedFileHash)
-            let walletFileHash;
+            let walletFileHash = "";
             let username = "";
 
             // Search through wallet files looking for the correct one
@@ -57,7 +57,7 @@ router.post(
 
             if (username.length > 0) {
                 const user = await UserModel.findOne({ username });
-                const body = { _id: user._id, username: user.username };
+                const body = { _id: walletFileHash, username: username };
                 const token = jwt.sign({ user: body }, "SECRET_JWT_SIGN_TOKEN");
 
                 return res.json({
